@@ -20,6 +20,9 @@ func _process(delta):
 
 func init(initialPosition):
 	global_position = initialPosition
+	scale = Vector2(0.2, 0.2)
+	var tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(self, "scale", Vector2(1, 1), 0.2)
 
 func setVelocity(newSpeed, newDirection):
 	speed = newSpeed;
