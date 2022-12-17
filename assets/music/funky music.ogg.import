@@ -1,0 +1,15 @@
+[remap]
+
+importer="ogg_vorbis"
+type="AudioStreamOGGVorbis"
+path="res://.import/funky music.ogg-04b07802b8e69109d15f2dcd03244ca7.oggstr"
+
+[deps]
+
+source_file="res://assets/music/funky music.ogg"
+dest_files=[ "res://.import/funky music.ogg-04b07802b8e69109d15f2dcd03244ca7.oggstr" ]
+
+[params]
+
+loop=true
+loop_offset=0

@@ -1,0 +1,33 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://scenes/peanor.tscn" type="PackedScene" id=1]
+[ext_resource path="res://scenes/crosshair.tscn" type="PackedScene" id=2]
+[ext_resource path="res://assets/music/funky music.ogg" type="AudioStream" id=3]
+[ext_resource path="res://assets/sprites/test/floor.png" type="Texture" id=4]
+
+[sub_resource type="RectangleShape2D" id=1]
+extents = Vector2( 512, 29.25 )
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Peanor" parent="." instance=ExtResource( 1 )]
+position = Vector2( 514, 422 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2( 512, 570.25 )
+shape = SubResource( 1 )
+
+[node name="ColorRect" type="Sprite" parent="StaticBody2D"]
+position = Vector2( 512, 571 )
+scale = Vector2( 31.9375, 1.8125 )
+texture = ExtResource( 4 )
+
+[node name="crosshair" parent="." instance=ExtResource( 2 )]
+position = Vector2( 189, -127 )
+
+[node name="BGM" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 3 )
+volume_db = -5.0
+autoplay = true
