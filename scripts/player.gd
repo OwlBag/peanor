@@ -6,14 +6,15 @@ var firing = false
 var fireDelay = 0;
 var fireCountdown = 0;
 
-var fireOffset = Vector2(30, -20);
+var fireOffset = Vector2.ZERO;
 
 var peaScene = preload("res://scenes/pea.tscn")
 
 onready var peaSoundPlayer = $PeaSound 
 onready var gunSoundPlayer = $GunSound
 
-onready var mySprite = $PeanorSprite
+onready var mySprite = $Body
+onready var myHead = $Body/Head
 
 enum {FIREMODE_NORMAL, FIREMODE_RAPID}
 
@@ -26,20 +27,20 @@ var speed = 500
 var velocity = Vector2.ZERO
 var falling = true
 
+var snap = Vector2.DOWN
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	adjustMousePos()
 	spreadRng.randomize()
 	setFireMode(FIREMODE_NORMAL)
 	
-
-
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	adjustMousePos()
 	if fireCountdown <= 0:
 		if firing:
-			fire(position, mousePos, fireSpeed);
+			fire(myHead.global_position, mousePos, fireSpeed);
 			fireCountdown = fireDelay
 	else:
 		fireCountdown -= 1;
@@ -51,19 +52,18 @@ func _process(delta):
 	else:
 		velocity.x = 0
 	
-
 func _physics_process(delta):
-	if !is_on_wall():
+	if !is_on_floor():
 		velocity.y += 10
 	else:
 		velocity.y = 0
 	
 	if velocity.y != 0:
-		move_and_slide_with_snap(Vector2(0, velocity.y), Vector2(0, 1))
+		move_and_slide_with_snap(Vector2(0, velocity.y), snap, Vector2.UP)
 	
 	if velocity.x != 0:
-		move_and_slide_with_snap(Vector2(velocity.x, 0), Vector2(speed, 0))
-
+		move_and_slide_with_snap(Vector2(velocity.x, 0), snap, Vector2.UP)
+		
 func _unhandled_input(event):
 #	print(event.as_text())
 	match event.get_class():
@@ -78,17 +78,27 @@ func _unhandled_input(event):
 						print ("double click")
 				else:
 					firing = false
-
+					
 func adjustMousePos():
 	mousePos = get_local_mouse_position()*4 + global_position
 	
 	if mousePos.x < global_position.x:
-		mySprite.scale.x = -1
-		fireOffset.x = -30
+		myHead.scale.x = -1
 	else:
-		mySprite.scale.x = 1
-		fireOffset.x = 30
+		myHead.scale.x = 1
+	
+	var headToMouse = myHead.get_angle_to(mousePos)
+	
+	fireOffset = Vector2(32, 0).rotated(headToMouse)
+	
+	headToMouse = abs(abs(headToMouse) - PI/2) if headToMouse <= 0 else PI/2
 
+	var rotationFrameCount = myHead.frames.get_frame_count(myHead.animation)
+
+	var calcFrameNum = round(range_lerp(headToMouse, 0, PI/2, rotationFrameCount-1, 0))
+
+	myHead.frame = calcFrameNum
+		
 func fire(positionFrom, positionTowards, speed = 1000):
 	var pea = peaScene.instance()
 	get_parent().add_child(pea)
